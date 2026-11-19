@@ -5,8 +5,10 @@ if($id){$s=$pdo->prepare("SELECT * FROM tutores WHERE id=?");$s->execute([$id]);
 $erro='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
  $nome=trim($_POST['nome']??''); $telefone=trim($_POST['telefone']??'');
- if($nome==='') $erro='Informe o nome.';
- else {
+if ($nome === '') $erro = 'Informe o nome.';
+elseif ($telefone !== '' && !preg_match('/^[\d\s\(\)\-\+]+$/', $telefone)) {
+    $erro = 'Informe um telefone válido (apenas números e símbolos telefônicos).';
+} else {
   if($id){$s=$pdo->prepare("UPDATE tutores SET nome=?,telefone=?,email=?,endereco=?,ativo=? WHERE id=?");$s->execute([$nome,$telefone,$_POST['email'],$_POST['endereco'],(int)($_POST['ativo']??1),$id]);}
   else{$s=$pdo->prepare("INSERT INTO tutores(nome,telefone,email,endereco) VALUES(?,?,?,?)");$s->execute([$nome,$telefone,$_POST['email'],$_POST['endereco']]);}
   header('Location: index.php');exit;
